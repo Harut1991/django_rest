@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Test, Question, Answer, UserAnswer
+from .upload_path import get_image_path
+from .models import Test, Question, Answer, UserAnswer, UserPhoto
 
 
 class TestSerializer(serializers.ModelSerializer):
@@ -85,4 +86,23 @@ class UserAnswerSerializer(serializers.ModelSerializer):
             'user',
             'answer',
             'answer_detail'
+        )
+
+class UserImageSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+    image = serializers.ImageField(
+        required=True,
+        allow_empty_file=False,
+    )
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        required=False,
+    )
+
+    class Meta:
+        model = UserPhoto
+        fields = (
+            'id',
+            'image',
+            'user'
         )

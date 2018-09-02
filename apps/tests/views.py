@@ -1,10 +1,13 @@
+from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .permissions import IsAuthenticatedAndAdmin
-from .serializer import TestSerializer, QuestionSerializer, AnswerSerializer, UserAnswerSerializer
-from .models import Test, Question, Answer, UserAnswer
+from .serializer import TestSerializer, QuestionSerializer, AnswerSerializer, UserAnswerSerializer, UserImageSerializer
+from .models import Test, Question, Answer, UserAnswer, UserPhoto
 
 
 class TestViewSet(viewsets.ModelViewSet):
@@ -40,3 +43,40 @@ class UserAnswerViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('user',)
     http_method_names = ["get", "post", "delete"]
+
+class UserImageViewSet(APIView):
+    serializer_class = UserImageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        get_data = request.query_params
+        user_query = get_data.get('user', False)
+
+        if user_query:
+            user = User.objects.filter(id=int(user_query)).first()
+            if not user:
+                return Response({'error': 'User dose not exist'}, status=status.HTTP_404_NOT_FOUND)
+            exit(user.username)
+            userfile = UserPhoto.objects.filter(user_id=user.id)
+        else:
+            userfile = UserPhoto.objects.all()
+
+        serializer = self.serializer_class(userfile, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            userFile = UserPhoto(
+                image=serializer.validated_data['image'],
+                user=request.user
+            )
+            userFile.save()
+            return Response({'result': 'success'}, status=status.HTTP_200_OK)
+
+        if serializer.errors:
+            error = {
+                "error": serializer.errors['image'][0]
+            }
+
+        return Response(error, status=status.HTTP_400_BAD_REQUEST)

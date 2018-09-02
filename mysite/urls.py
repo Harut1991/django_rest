@@ -19,7 +19,7 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
-from apps.tests.views import TestViewSet, QuestionViewSet, AnswerViewSet, UserAnswerViewSet
+from apps.tests.views import TestViewSet, QuestionViewSet, AnswerViewSet, UserAnswerViewSet, UserImageViewSet
 from apps.user.views import LoginViewSet, CreateUserView
 
 schema_view = get_swagger_view(title='New API')
@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^$', schema_view),
     url(r'^', include(router.urls)),
     url(r'^sign-in', LoginViewSet.as_view()),
+    url(r'^user-photo', UserImageViewSet.as_view()),
     url(r'^sign-up', CreateUserView.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

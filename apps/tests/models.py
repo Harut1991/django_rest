@@ -1,5 +1,9 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.db import models
+
+from .upload_path import get_image_path
 
 
 class Test(models.Model):
@@ -75,3 +79,16 @@ class UserAnswer(models.Model):
 
     class Meta:
         verbose_name_plural = 'UserAnswer'
+
+class UserPhoto(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(
+        upload_to=get_image_path,
+        null=False,
+    )
+
+    def __str__(self):
+        return self.image
+
+    class Meta:
+        verbose_name_plural= 'UserPhoto'
