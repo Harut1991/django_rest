@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .filter import  ActorFilter
 from .permissions import IsAuthenticatedAndAdmin
 from .serializer import TestSerializer, QuestionSerializer, AnswerSerializer, UserAnswerSerializer, UserImageSerializer
 from .models import Test, Question, Answer, UserAnswer, UserPhoto
@@ -33,6 +34,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedAndAdmin]
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('question',)
+    filter_class = ActorFilter
     http_method_names = ["get", "post", "delete"]
 
 

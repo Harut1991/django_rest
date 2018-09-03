@@ -1,4 +1,3 @@
-import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -56,7 +55,11 @@ class Answer(models.Model):
 
     @property
     def get_question_details(self):
-        return {'id': self.question.id, 'question_text': self.question.question_text}
+        return {'id': self.question.id, 'question_text': self.question.question_text,
+                'test': {
+                    'id': self.question.test.id,
+                    'name': self.question.test.name
+                }}
 
     def __str__(self):
         return self.answer_text
